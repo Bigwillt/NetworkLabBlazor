@@ -1,6 +1,7 @@
 bin/
 obj/
-wwwroot/
+wwwroot/_framework/
+wwwroot/_content/
 .vs/
 .vscode/
 node_modules/
