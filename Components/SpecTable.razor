@@ -1,0 +1,53 @@
+@using NetworkLabBlazor.Models
+
+<table class="spec-table">
+    @if (!HasSectionHeader)
+{
+    <thead>
+        <tr>
+            <th>Task</th>
+            <th>Specification</th>
+        </tr>
+    </thead>
+}
+
+    <tbody>
+    @foreach (var group in Items.GroupBy(r => r.Task))
+    {
+        // NEW — section header row (PC1, PC2)
+        if (group.First().IsHeader)
+        {
+            <tr>
+                <th colspan="2">@group.First().Task</th>
+            </tr>
+            continue;
+        }
+
+        var rowspan = group.Count();
+        bool first = true;
+
+        foreach (var row in group)
+        {
+            <tr>
+                @if (first)
+                {
+                    <td rowspan="@rowspan">@row.Task</td>
+                }
+                <td>@row.Specification</td>
+            </tr>
+
+            first = false;
+        }
+    }
+    </tbody>
+
+</table>
+
+@code {
+    [Parameter] public IEnumerable<SpecRow> Items { get; set; } = Enumerable.Empty<SpecRow>();
+
+
+    // NEW — determines whether to hide <thead>
+    private bool HasSectionHeader =>
+        Items.FirstOrDefault()?.IsHeader == true;
+    }

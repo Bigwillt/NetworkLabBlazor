@@ -1,0 +1,41 @@
+@using NetworkLabBlazor.Models
+
+<table class="address-table">
+    <thead>
+        <tr>
+            <th>Device</th>
+            <th>Interface</th>
+            <th>IP Address</th>
+            <th>Subnet</th>
+            <th>Default Gateway</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var group in Items)
+        {
+            bool first = true;
+
+            foreach (var row in group.Rows)
+            {
+                <tr>
+                    @if (first)
+                    {
+                        <td rowspan="@group.Rows.Count">@group.Device</td>
+                        first = false;
+                    }
+
+                    <td>@row.Interface</td>
+                    <td>@row.IP</td>
+                    <td>@row.Subnet</td>
+                    <td>@row.Gateway</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public List<AddressGroup> Items { get; set; } = new();
+}

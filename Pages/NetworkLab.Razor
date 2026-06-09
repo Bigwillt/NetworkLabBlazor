@@ -1,0 +1,247 @@
+@page "/networklab"
+
+<button class="copy-btn" onclick="window.print()">Download as PDF</button>
+
+<h1>Network Lab</h1>
+
+<div class="container">
+    <img src="images/Network Diagram.png" alt="Network Diagram made with SketchWow. It shows two LANs (PC, switch, router) connected by a WAN.">
+
+<h3>Addressing Table</h3>
+<AddressTable Items="Addressing" />
+
+<!-- R1 -->
+<div class="mb-3">
+    <button class="btn btn-outline-primary d-flex align-items-center"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#r1Section"
+            aria-expanded="false"
+            aria-controls="r1Section">
+        <i class="bi bi-chevron-down me-2"></i>
+        R1 Configuration
+    </button>
+
+    <div class="collapse show mt-2" id="r1Section">
+        <SpecTable Items="R1Specs" />
+    </div>
+</div>
+
+<!-- R2 -->
+<div class="mb-3">
+    <button class="btn btn-outline-primary d-flex align-items-center"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#r2Section"
+            aria-expanded="false"
+            aria-controls="r2Section">
+        <i class="bi bi-chevron-down me-2"></i>
+        R2 Configuration
+    </button>
+
+    <div class="collapse show mt-2" id="r2Section">
+        <SpecTable Items="R2Specs" />
+    </div>
+</div>
+
+<!-- SW1 -->
+<div class="mb-3">
+    <button class="btn btn-outline-primary d-flex align-items-center"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#sw1Section"
+            aria-expanded="false"
+            aria-controls="sw1Section">
+        <i class="bi bi-chevron-down me-2"></i>
+        SW1 Configuration
+    </button>
+
+    <div class="collapse show mt-2" id="sw1Section">
+        <SpecTable Items="SW1Specs" />
+    </div>
+</div>
+
+<!-- SW2 -->
+<div class="mb-3">
+    <button class="btn btn-outline-primary d-flex align-items-center"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#sw2Section"
+            aria-expanded="false"
+            aria-controls="sw2Section">
+        <i class="bi bi-chevron-down me-2"></i>
+        SW2 Configuration
+    </button>
+
+    <div class="collapse show mt-2" id="sw2Section">
+        <SpecTable Items="SW2Specs" />
+    </div>
+</div>
+
+<!-- PC1 -->
+<div class="mb-3">
+    <button class="btn btn-outline-primary d-flex align-items-center"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#pc1Section"
+            aria-expanded="false"
+            aria-controls="pc1Section">
+        <i class="bi bi-chevron-down me-2"></i>
+        PC1 Network Configuration
+    </button>
+
+    <div class="collapse show mt-2" id="pc1Section">
+        <SpecTable Items="PC1Specs" />
+    </div>
+</div>
+
+<!-- PC2 -->
+<div class="mb-3">
+    <button class="btn btn-outline-primary d-flex align-items-center"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#pc2Section"
+            aria-expanded="false"
+            aria-controls="pc2Section">
+        <i class="bi bi-chevron-down me-2"></i>
+        PC2 Network Configuration
+    </button>
+
+    <div class="collapse show mt-2" id="pc2Section">
+        <SpecTable Items="PC2Specs" />
+    </div>
+</div>
+
+
+<p>Upon completing your local network, attempt to connect to a neighboring network. Use routing for a Gateway of Last Resort for simplified setup in this lab.</p>
+<p style="font-family:'Courier New', monospace;">  <b>ip route 0.0.0.0 0.0.0.0</b> <i>{ip-address | exit-int}</i>  </p> 
+
+<footer class="site-footer">
+    © @DateTime.Now.Year Tim Williamson. All rights reserved.
+</footer>
+
+</div>
+
+@code {
+    List<SpecRow> R1Specs = new()
+    {
+        new() { Task = "Router name", Specification = "R1" },
+        new() { Task = "Domain name", Specification = "r1.labnet.local" },
+        new() { Task = "Encrypted privileged exec password", Specification = "R1secure!" },
+        new() { Task = "Console access password", Specification = "R1console" },
+        new() { Task = "Encrypt the clear text passwords", Specification = "Yes" },
+        new() { Task = "MOTD Banner", Specification = "R1 Authorized Access Only" },
+        new() { Task = "Interface G0/0", Specification = "Set Description" },
+        new() { Task = "Interface G0/0", Specification = "Set IP Address" },
+        new() { Task = "Interface G0/0", Specification = "Activate Interface" },
+        new() { Task = "Interface G0/1", Specification = "Set Description" },
+        new() { Task = "Interface G0/1", Specification = "Set IP Address" },
+        new() { Task = "Interface G0/1", Specification = "Activate Interface" }
+    };
+
+    List<SpecRow> R2Specs = new()
+    {
+        new() { Task = "Router name", Specification = "R2" },
+        new() { Task = "Domain name", Specification = "r2.labnet.local" },
+        new() { Task = "Encrypted privileged exec password", Specification = "R2secure!" },
+        new() { Task = "Console access password", Specification = "R2console" },
+        new() { Task = "Encrypt the clear text passwords", Specification = "Yes" },
+        new() { Task = "MOTD Banner", Specification = "R2 Authorized Access Only" },
+        new() { Task = "Interface G0/0", Specification = "Set Description" },
+        new() { Task = "Interface G0/0", Specification = "Set IP Address" },
+        new() { Task = "Interface G0/0", Specification = "Activate Interface" },
+        new() { Task = "Interface G0/1", Specification = "Set Description" },
+        new() { Task = "Interface G0/1", Specification = "Set IP Address" },
+        new() { Task = "Interface G0/1", Specification = "Activate Interface" }
+    };
+
+    List<SpecRow> SW1Specs = new()
+    {
+        new() { Task = "Switch name", Specification = "SW1" },
+        new() { Task = "Configure Management Interface (SVI)", Specification = "Set the Layer 3 IPv4 Address" },
+        new() { Task = "Encrypted privileged exec password", Specification = "B0nza!" },
+        new() { Task = "Set console access password", Specification = "Con@cc1" },
+        new() { Task = "Set the SSH password", Specification = "TelNetSux" },
+        new() { Task = "Set the Default Gateway Address", Specification = "" }
+    };
+
+    List<SpecRow> SW2Specs = new()
+    {
+        new() { Task = "Switch name", Specification = "SW2" },
+        new() { Task = "Configure Management Interface (SVI)", Specification = "Set the Layer 3 IPv4 Address" },
+        new() { Task = "Encrypted privileged exec password", Specification = "B0nza!" },
+        new() { Task = "Set console access password", Specification = "Con@cc1" },
+        new() { Task = "Set the SSH password", Specification = "TelNetSux" },
+        new() { Task = "Set the Default Gateway Address", Specification = "" }
+    };
+
+    List<SpecRow> PC1Specs = new()
+    {
+        new() { Task = "IP Address", Specification = "10.10.10.50" },
+        new() { Task = "Subnet Mask", Specification = "255.255.255.192" },
+        new() { Task = "Default Gateway", Specification = "" }
+    };
+
+    List<SpecRow> PC2Specs = new()
+    {
+        new() { Task = "IP Address", Specification = "10.10.10.60" },
+        new() { Task = "Subnet Mask", Specification = "255.255.255.192" },
+        new() { Task = "Default Gateway", Specification = "" }
+    };
+
+    private List<AddressGroup> Addressing = new()
+    {
+        new AddressGroup
+        {
+            Device = "R1",
+            Rows = new()
+            {
+                new() { Interface = "G0/0", IP = "10.10.10.1", Subnet = "255.255.255.192", Gateway = "" },
+                new() { Interface = "G0/1 (WAN)", IP = "172.16.100.1", Subnet = "255.255.255.252", Gateway = "" }
+            }
+        },
+        new AddressGroup
+        {
+            Device = "R2",
+            Rows = new()
+            {
+                new() { Interface = "G0/0", IP = "192.168.20.1", Subnet = "255.255.255.192", Gateway = "" },
+                new() { Interface = "G0/1 (WAN)", IP = "172.16.100.2", Subnet = "255.255.255.252", Gateway = "" }
+            }
+        },
+        new AddressGroup
+        {
+            Device = "S1",
+            Rows = new()
+            {
+                new() { Interface = "F0/1", IP = "10.10.10.5", Subnet = "255.255.255.192", Gateway = "" }
+            }
+        },
+        new AddressGroup
+        {
+            Device = "S2",
+            Rows = new()
+            {
+                new() { Interface = "F0/1", IP = "192.168.20.5", Subnet = "255.255.255.192", Gateway = "" }
+            }
+        },
+        new AddressGroup
+        {
+            Device = "PC1",
+            Rows = new()
+            {
+                new() { Interface = "", IP = "10.10.10.50", Subnet = "255.255.255.192", Gateway = "" }
+            }
+        },
+        new AddressGroup
+        {
+            Device = "PC2",
+            Rows = new()
+            {
+                new() { Interface = "", IP = "192.168.20.50", Subnet = "255.255.255.192", Gateway = "" }
+            }
+        }
+    };
+}
+
+
