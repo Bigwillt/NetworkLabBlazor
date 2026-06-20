@@ -205,59 +205,58 @@ private List<SpecRow> PC2Specs
     }
 }
 
-    private List<AddressGroup> Addressing = new()
-    {
-        new AddressGroup
-        {
-            Device = "R1",
-            Rows = new()
-            {
-                new() { Interface = "G0/0", IP = "10.10.10.1", Subnet = "255.255.255.192", Gateway = "" },
-                new() { Interface = "G0/1 (WAN)", IP = "172.16.100.1", Subnet = "255.255.255.252", Gateway = "" }
-            }
-        },
-        new AddressGroup
-        {
-            Device = "R2",
-            Rows = new()
-            {
-                new() { Interface = "G0/0", IP = "192.168.20.1", Subnet = "255.255.255.192", Gateway = "" },
-                new() { Interface = "G0/1 (WAN)", IP = "172.16.100.2", Subnet = "255.255.255.252", Gateway = "" }
-            }
-        },
-        new AddressGroup
-        {
-            Device = "S1",
-            Rows = new()
-            {
-                new() { Interface = "F0/1", IP = "10.10.10.5", Subnet = "255.255.255.192", Gateway = "" }
-            }
-        },
-        new AddressGroup
-        {
-            Device = "S2",
-            Rows = new()
-            {
-                new() { Interface = "F0/1", IP = "192.168.20.5", Subnet = "255.255.255.192", Gateway = "" }
-            }
-        },
-        new AddressGroup
-        {
-            Device = "PC1",
-            Rows = new()
-            {
-                new() { Interface = "", IP = "10.10.10.50", Subnet = "255.255.255.192", Gateway = "" }
-            }
-        },
-        new AddressGroup
-        {
-            Device = "PC2",
-            Rows = new()
-            {
-                new() { Interface = "", IP = "192.168.20.50", Subnet = "255.255.255.192", Gateway = "" }
-            }
-        }
-    };
-}
+<button class="btn btn-primary mb-3" @onclick="GenerateLab">
+    Generate New Lab
+</button>
 
+@if (Addressing == null || Addressing.Count == 0)
+{
+    <div class="alert alert-info">
+        No lab generated yet. Click <strong>Generate New Lab</strong> to begin.
+    </div>
+}
+else
+{
+    <AddressTable Groups="Addressing" />
+}AddressTable Groups="Addressing" />
+
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    @if (ShowToast)
+    {
+        <div class="toast show align-items-center text-bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Lab Generated!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                        @onclick="() => ShowToast = false"></button>
+            </div>
+        </div>
+    }
+</div>
+
+
+@code {
+    private List<AddressGroup> Addressing = new();
+
+    private void GenerateLab()
+    {
+        Addressing = LabAddressingGenerator.Generate();
+    }
+
+    private bool ShowToast = false;
+
+    private async void GenerateLab()
+    {
+        Addressing = LabAddressingGenerator.Generate();
+
+        ShowToast = true;
+        StateHasChanged();
+
+        // Auto-hide after 3 seconds
+        await Task.Delay(3000);
+        ShowToast = false;
+        StateHasChanged();
+    }
+}
 
