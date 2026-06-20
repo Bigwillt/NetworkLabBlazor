@@ -175,19 +175,35 @@
         new() { Task = "Set the Default Gateway Address", Specification = "" }
     };
 
-    List<SpecRow> PC1Specs = new()
+private List<SpecRow> PC1Specs
+{
+    get
     {
-        new() { Task = "IP Address", Specification = "10.10.10.50" },
-        new() { Task = "Subnet Mask", Specification = "255.255.255.192" },
-        new() { Task = "Default Gateway", Specification = "" }
-    };
+        var pc = Addressing.First(g => g.Device == "PC1").Rows.First();
 
-    List<SpecRow> PC2Specs = new()
+        return new()
+        {
+            new() { Task = "IP Address", Specification = pc.IP },
+            new() { Task = "Subnet Mask", Specification = pc.Subnet },
+            new() { Task = "Default Gateway", Specification = pc.Gateway }
+        };
+    }
+}
+
+private List<SpecRow> PC2Specs
+{
+    get
     {
-        new() { Task = "IP Address", Specification = "10.10.10.60" },
-        new() { Task = "Subnet Mask", Specification = "255.255.255.192" },
-        new() { Task = "Default Gateway", Specification = "" }
-    };
+        var pc = Addressing.First(g => g.Device == "PC2").Rows.First();
+
+        return new()
+        {
+            new() { Task = "IP Address", Specification = pc.IP },
+            new() { Task = "Subnet Mask", Specification = pc.Subnet },
+            new() { Task = "Default Gateway", Specification = pc.Gateway }
+        };
+    }
+}
 
     private List<AddressGroup> Addressing = new()
     {
