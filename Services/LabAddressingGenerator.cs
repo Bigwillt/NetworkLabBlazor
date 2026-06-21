@@ -4,13 +4,13 @@ namespace NetworkLabBlazor.Services;
 
 public static class LabAddressingGenerator
 {
-    private static readonly Random Rand = new();
+    //private static readonly Random Rand = new();
 
     // Generate a random /30 WAN network (e.g., 172.16.100.0/30)
-    private static (string Net, string R1IP, string R2IP, string Mask) GenerateWan30()
+    private static (string Net, string R1IP, string R2IP, string Mask) GenerateWan30(Random rng)
     {
-        int third = Rand.Next(0, 255);
-        int fourth = (Rand.Next(0, 63) * 4); // multiples of 4 for /30
+        int third = rng.Next(0, 255);
+        int fourth = (rng.Next(0, 63) * 4); // multiples of 4 for /30
 
         string network = $"172.16.{third}.{fourth}";
         string r1 = $"172.16.{third}.{fourth + 1}";
@@ -21,26 +21,32 @@ public static class LabAddressingGenerator
     }
 
     // Generate a random LAN subnet (e.g., 10.10.X.0/26)
-    private static (string Net, string Mask, string Gateway, string HostIP, string SwitchIP) GenerateLan()
+    private static (string Net, string Mask, string Gateway, string HostIP, string SwitchIP) GenerateLan(Random rng)
     {
-        int third = Rand.Next(0, 255);
-        int block = Rand.Next(0, 4) * 64;
+        int third = rng.Next(0, 255);
 
-        string network = $"10.10.{third}.{block}";
-        string mask = "255.255.255.192";
-        string gateway = $"10.10.{third}.{block + 1}";
-        string switchIP = $"10.10.{third}.{block + 2}";
-        string host = $"10.10.{third}.{block + Rand.Next(10, 62)}";
+        string network = $"10.10.{third}.0";
+        string mask = "255.255.255.0";
+
+        // Router LAN interface (this IS the default gateway)
+        string gateway = $"10.10.{third}.1";
+
+        // Switch management IP
+        string switchIP = $"10.10.{third}.2";
+
+        // Random host
+        string host = $"10.10.{third}.{rng.Next(10, 254)}";
 
         return (network, mask, gateway, host, switchIP);
     }
 
-    public static List<AddressGroup> Generate()
+    public static List<AddressGroup> Generate(int? seed = null)
     {
-        var wan = GenerateWan30();
-        var lan1 = GenerateLan();
-        var lan2 = GenerateLan();
-
+        Random rng = seed.HasValue ? new Random(seed.Value) : new Random();
+        var wan = GenerateWan30(rng);
+        var lan1 = GenerateLan(rng);
+        var lan2 = GenerateLan(rng);
+        
         return new()
         {
             new AddressGroup
@@ -66,7 +72,7 @@ public static class LabAddressingGenerator
                 Device = "S1",
                 Rows = new()
                 {
-                    new() { Interface = "F0/1", IP = lan1.SwitchIP, Subnet = lan1.Mask, Gateway = lan1.Gateway }
+                    new() { Interface = "F0/1", IP = lan1.SwitchIP, Subnet = lan1.Mask, Gateway = "" }
                 }
             },
 
@@ -83,7 +89,7 @@ public static class LabAddressingGenerator
                 Device = "PC1",
                 Rows = new()
                 {
-                    new() { Interface = "", IP = lan1.HostIP, Subnet = lan1.Mask, Gateway = lan1.Gateway }
+                    new() { Interface = "", IP = lan1.HostIP, Subnet = lan1.Mask, Gateway = "" }
                 }
             },
             new AddressGroup
@@ -91,7 +97,7 @@ public static class LabAddressingGenerator
                 Device = "PC2",
                 Rows = new()
                 {
-                    new() { Interface = "", IP = lan2.HostIP, Subnet = lan2.Mask, Gateway = lan2.Gateway }
+                    new() { Interface = "", IP = lan2.HostIP, Subnet = lan2.Mask, Gateway = "" }
                 }
             },
         };

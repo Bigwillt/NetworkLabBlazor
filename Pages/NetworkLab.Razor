@@ -1,4 +1,7 @@
 @page "/networklab"
+@using NetworkLabBlazor.Services
+@using Microsoft.AspNetCore.Components
+@inject NavigationManager Nav
 
 <button class="copy-btn" onclick="window.print()">Download as PDF</button>
 
@@ -7,8 +10,27 @@
 <div class="container">
     <img src="images/Network Diagram.png" alt="Network Diagram made with SketchWow. It shows two LANs (PC, switch, router) connected by a WAN.">
 
-<h3>Addressing Table</h3>
-<AddressTable Items="Addressing" />
+@if (Addressing == null || Addressing.Count == 0)
+{
+    <div class="alert alert-info">
+        No lab generated yet. Click <strong>Generate New Lab</strong> to begin.
+    </div>
+}
+else
+{
+    <h3>Addressing Table</h3>
+    <AddressTable Items="Addressing" />
+}
+
+    <button class="btn btn-primary mb-3" @onclick="GenerateLab">
+    Generate New Lab
+    </button>
+
+    <div class="mt-2 mb-3">
+        <label>Seed (optional):</label>
+        <input @bind="Seed" class="form-control w-auto d-inline-block" />
+    </div>
+
 
 <!-- R1 -->
 <div class="mb-3">
@@ -78,40 +100,45 @@
     </div>
 </div>
 
-<!-- PC1 -->
-<div class="mb-3">
-    <button class="btn btn-outline-primary d-flex align-items-center"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#pc1Section"
-            aria-expanded="false"
-            aria-controls="pc1Section">
-        <i class="bi bi-chevron-down me-2"></i>
-        PC1 Network Configuration
-    </button>
+@if (PC1Specs is not null)
+{
+    <!-- PC1 -->
+    <div class="mb-3">
+        <button class="btn btn-outline-primary d-flex align-items-center"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#pc1Section"
+                aria-expanded="false"
+                aria-controls="pc1Section">
+            <i class="bi bi-chevron-down me-2"></i>
+            PC1 Network Configuration
+        </button>
 
-    <div class="collapse show mt-2" id="pc1Section">
-        <SpecTable Items="PC1Specs" />
+        <div class="collapse show mt-2" id="pc1Section">
+            <SpecTable Items="PC1Specs" />
+        </div>
     </div>
-</div>
+}
 
-<!-- PC2 -->
-<div class="mb-3">
-    <button class="btn btn-outline-primary d-flex align-items-center"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#pc2Section"
-            aria-expanded="false"
-            aria-controls="pc2Section">
-        <i class="bi bi-chevron-down me-2"></i>
-        PC2 Network Configuration
-    </button>
+@if (PC2Specs is not null)
+{
+    <!-- PC2 -->
+    <div class="mb-3">
+        <button class="btn btn-outline-primary d-flex align-items-center"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#pc2Section"
+                aria-expanded="false"
+                aria-controls="pc2Section">
+            <i class="bi bi-chevron-down me-2"></i>
+            PC2 Network Configuration
+        </button>
 
-    <div class="collapse show mt-2" id="pc2Section">
-        <SpecTable Items="PC2Specs" />
+        <div class="collapse show mt-2" id="pc2Section">
+            <SpecTable Items="PC2Specs" />
+        </div>
     </div>
-</div>
-
+}
 
 <p>Upon completing your local network, attempt to connect to a neighboring network. Use routing for a Gateway of Last Resort for simplified setup in this lab.</p>
 <p style="font-family:'Courier New', monospace;">  <b>ip route 0.0.0.0 0.0.0.0</b> <i>{ip-address | exit-int}</i>  </p> 
@@ -123,6 +150,10 @@
 </div>
 
 @code {
+    private List<AddressGroup> Addressing = new();
+    private bool ShowToast = false;
+    private int? Seed { get; set; }
+
     List<SpecRow> R1Specs = new()
     {
         new() { Task = "Router name", Specification = "R1" },
@@ -175,85 +206,49 @@
         new() { Task = "Set the Default Gateway Address", Specification = "" }
     };
 
-private List<SpecRow> PC1Specs
-{
-    get
+    private List<SpecRow>? PC1Specs
     {
-        var pc = Addressing.First(g => g.Device == "PC1").Rows.First();
-
-        return new()
+        get
         {
-            new() { Task = "IP Address", Specification = pc.IP },
-            new() { Task = "Subnet Mask", Specification = pc.Subnet },
-            new() { Task = "Default Gateway", Specification = pc.Gateway }
-        };
+            var pc = Addressing.FirstOrDefault(g => g.Device == "PC1");
+            var row = pc?.Rows.FirstOrDefault();
+
+            if (row is null)
+                return null;
+
+            return new()
+            {
+                new() { Task = "IP Address", Specification = row.IP },
+                new() { Task = "Subnet Mask", Specification = row.Subnet },
+            };
+        }
     }
-}
 
-private List<SpecRow> PC2Specs
-{
-    get
+    private List<SpecRow>? PC2Specs
     {
-        var pc = Addressing.First(g => g.Device == "PC2").Rows.First();
-
-        return new()
+        get
         {
-            new() { Task = "IP Address", Specification = pc.IP },
-            new() { Task = "Subnet Mask", Specification = pc.Subnet },
-            new() { Task = "Default Gateway", Specification = pc.Gateway }
-        };
+            var pc = Addressing.FirstOrDefault(g => g.Device == "PC2");
+            var row = pc?.Rows.FirstOrDefault();
+
+            if (row is null)
+                return null;
+
+            return new()
+            {
+                new() { Task = "IP Address", Specification = row.IP },
+                new() { Task = "Subnet Mask", Specification = row.Subnet },
+            };
+        }
     }
-}
-
-<button class="btn btn-primary mb-3" @onclick="GenerateLab">
-    Generate New Lab
-</button>
-
-@if (Addressing == null || Addressing.Count == 0)
-{
-    <div class="alert alert-info">
-        No lab generated yet. Click <strong>Generate New Lab</strong> to begin.
-    </div>
-}
-else
-{
-    <AddressTable Groups="Addressing" />
-}AddressTable Groups="Addressing" />
-
-<div class="toast-container position-fixed top-0 end-0 p-3">
-    @if (ShowToast)
-    {
-        <div class="toast show align-items-center text-bg-success border-0" role="alert">
-            <div class="d-flex">
-                <div class="toast-body">
-                    Lab Generated!
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                        @onclick="() => ShowToast = false"></button>
-            </div>
-        </div>
-    }
-</div>
-
-
-@code {
-    private List<AddressGroup> Addressing = new();
-
-    private void GenerateLab()
-    {
-        Addressing = LabAddressingGenerator.Generate();
-    }
-
-    private bool ShowToast = false;
 
     private async void GenerateLab()
     {
-        Addressing = LabAddressingGenerator.Generate();
+        Addressing = LabAddressingGenerator.Generate(Seed);
 
         ShowToast = true;
         StateHasChanged();
 
-        // Auto-hide after 3 seconds
         await Task.Delay(3000);
         ShowToast = false;
         StateHasChanged();
